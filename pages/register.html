@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+
+  <style>
+    body {
+      background-color: #6e753f;
+      margin: 0;
+      padding: 0;
+      font-family: 'Trebuchet MS', sans-serif;
+      color: #fef5f0;
+    }
+
+    .register-form {
+      background-color: #fef5f0;
+      color: #6e753f;
+      max-width: 500px;
+      margin: 100px auto;
+      padding: 40px;
+      border: 4px solid #c8c6b1;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .register-form h1 {
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: #6e753f;
+    }
+
+    .register-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    .register-form input[type="text"],
+    .register-form input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #c8c6b1;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    .register-form button {
+      background-color: rgb(14, 56, 2);
+      color: #fef5f0;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .register-form button:hover {
+      background-color: #2d6e25;
+    }
+
+    .register-form h4 {
+      margin-top: 20px;
+      color: #6e753f;
+    }
+
+    .register-form a {
+      color: rgb(14, 56, 2);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .register-form a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="register-form">
+    <h1>Register Below</h1>
+
+    <form action="register.php" method="POST">
+      <label for="id">ID</label>
+      <input type="text" id="id" name="id" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Create Account</button>
+    </form>
+
+    <h4>
+      Have an account?
+      <a href="login.html">Click here to login</a>
+    </h4>
+  </div>
+</body>
+</html>
