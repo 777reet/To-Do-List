@@ -120,7 +120,7 @@ $completedTasks = (int)$completedTasksRow['completed'];
       <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
         <thead>
           <tr>
-            <th>#</th>
+            <th>No.</th>
             <th>Task</th>
             <th>Action</th>
           </tr>
