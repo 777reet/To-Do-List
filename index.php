@@ -1,4 +1,6 @@
 <?php
+sessin_start();
+
 date_default_timezone_set("Asia/Kolkata");
 $day = date("l");      
 $date = date("d");     
@@ -9,6 +11,13 @@ $time = date("h:i A");
 $conn = new mysqli("localhost", "root", "", "todolist");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+}
+
+// ✅ Moved here to run BEFORE any output
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all_tasks'])) {
+    $conn->query("DELETE FROM tasks");
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -57,14 +66,12 @@ $completedTasks = (int)$completedTasksRow['completed'];
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>To Do List</title>
   <link rel="stylesheet" href="style.css" />
-
 </head>
 <body>
 
   <h1> 🍵 Welcome User, What's On Your Mind Today?</h1>
 
   <div class="parent">
-
     <div id="time">
       <h2><?= htmlspecialchars($day) ?></h2> 
       <span class="circle-number"><?= htmlspecialchars($date) ?></span>
@@ -138,8 +145,11 @@ $completedTasks = (int)$completedTasksRow['completed'];
     <button onclick="finishDay()">Finish Day</button>
   </div>
 
-  <script>
+  <div class="buttonclass">
+    <button onclick="logout()">Logout</button>
+  </div>
 
+  <script>
     const totalTasks = <?= $totalTasks ?>;
     const completedTasks = <?= $completedTasks ?>;
 
@@ -148,7 +158,6 @@ $completedTasks = (int)$completedTasksRow['completed'];
       return Math.round((completed / total) * 100);
     }
 
-  
     function updateProgressBar(total, completed) {
       const progressBar = document.getElementById('progress-bar');
       const progressText = document.getElementById('progress-text');
@@ -157,13 +166,10 @@ $completedTasks = (int)$completedTasksRow['completed'];
       progressText.textContent = `${percent}% Completed (${completed} of ${total} tasks)`;
     }
 
-   
     updateProgressBar(totalTasks, completedTasks);
 
-   
     function finishDay() {
       if(confirm('Are you sure you want to clear all tasks for today?')) {
-       
         const form = document.createElement('form');
         form.method = 'POST';
         form.style.display = 'none';
@@ -184,11 +190,5 @@ $completedTasks = (int)$completedTasksRow['completed'];
 </html>
 
 <?php 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all_tasks'])) {
-    $conn->query("DELETE FROM tasks");
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
-}
-
 $conn->close(); 
 ?>
