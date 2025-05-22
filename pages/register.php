@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 $servername = "localhost";
 $db_username = "root";
 $db_password = "";
@@ -39,12 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Prepare failed: " . $conn->error);
     }
 
-    // Change bind_param from "is" to "ss" for string + string
     $stmt->bind_param("ss", $id, $password);
 
     if ($stmt->execute()) {
+        // Set session user_id for auto-login
+        $_SESSION['user_id'] = $id;
+
         $stmt->close();
         $conn->close();
+
         header("Location: http://localhost/todolist/index.php");
         exit();
     } else {

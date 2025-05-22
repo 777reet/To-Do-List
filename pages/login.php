@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 $servername = "localhost";
 $db_username = "root";
@@ -19,23 +20,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($id) || empty($password)) {
         echo "<p style='color:red;'>Please fill in all the details.</p>";
     } elseif (!filter_var($id, FILTER_VALIDATE_EMAIL)) {
-        // Validate email format
         echo "<p style='color:red;'>Please enter a valid email as ID.</p>";
     } else {
-        // Use prepared statements to prevent SQL injection
-        $stmt = $conn->prepare("SELECT * FROM users WHERE id = ? AND password = ?");
+        // Use prepared statements
+        $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
         if ($stmt === false) {
             die("Prepare failed: " . $conn->error);
         }
 
-        $stmt->bind_param("ss", $id, $password);
+        $stmt->bind_param("s", $id);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result && $result->num_rows === 1) {
-            // Successful login
-            header("Location: http://localhost/todolist/index.php");
-            exit();
+            $user = $result->fetch_assoc();
+            
+            // Assuming your passwords are stored hashed in DB,
+            // replace the next line with password_verify:
+            // if (password_verify($password, $user['password'])) {
+            
+            // If passwords are plain text (not recommended), just compare:
+            if ($password === $user['password']) {
+                // Successful login: set session variable
+                $_SESSION['user_id'] = $user['id'];  // or user ID if separate field
+                
+                header("Location: http://localhost/todolist/index.php");
+                exit();
+            } else {
+                echo "<p style='color:red;'>Invalid ID or password.</p>";
+            }
         } else {
             echo "<p style='color:red;'>Invalid ID or password.</p>";
         }

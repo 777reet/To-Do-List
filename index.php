@@ -1,5 +1,12 @@
 <?php
-sessin_start();
+session_start();
+
+// Simulated login for testing - replace with your real login logic!
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['user_id'] = 1; // Default test user ID; change as needed
+}
+
+$user_id = $_SESSION['user_id'];
 
 date_default_timezone_set("Asia/Kolkata");
 $day = date("l");      
@@ -13,50 +20,71 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// ✅ Moved here to run BEFORE any output
+// Clear all tasks for this user (Finish Day)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all_tasks'])) {
-    $conn->query("DELETE FROM tasks");
+    $stmt = $conn->prepare("DELETE FROM tasks WHERE user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $stmt->close();
+
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 
+// Handle task actions: add, done, delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_task'])) {
         $task = trim($_POST['task']);
         if (!empty($task)) {
-            $stmt = $conn->prepare("INSERT INTO tasks (task) VALUES (?)");
-            $stmt->bind_param("s", $task);
+            $stmt = $conn->prepare("INSERT INTO tasks (task, user_id) VALUES (?, ?)");
+            $stmt->bind_param("si", $task, $user_id);
             $stmt->execute();
             $stmt->close();
         }
     }
+
     if (isset($_POST['done_task'])) {
         $id = intval($_POST['task_id']);
-        $stmt = $conn->prepare("UPDATE tasks SET completed = 1 WHERE id = ?");
-        $stmt->bind_param("i", $id);
+        $stmt = $conn->prepare("UPDATE tasks SET completed = 1 WHERE id = ? AND user_id = ?");
+        $stmt->bind_param("ii", $id, $user_id);
         $stmt->execute();
         $stmt->close();
     }
+
     if (isset($_POST['delete_task'])) {
         $id = intval($_POST['task_id']);
-        $stmt = $conn->prepare("DELETE FROM tasks WHERE id = ?");
-        $stmt->bind_param("i", $id);
+        $stmt = $conn->prepare("DELETE FROM tasks WHERE id = ? AND user_id = ?");
+        $stmt->bind_param("ii", $id, $user_id);
         $stmt->execute();
         $stmt->close();
     }
+
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 
-$result = $conn->query("SELECT * FROM tasks ORDER BY id DESC");
+// Fetch tasks belonging only to this user
+$stmt = $conn->prepare("SELECT * FROM tasks WHERE user_id = ? ORDER BY id DESC");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
-$totalTasksResult = $conn->query("SELECT COUNT(*) as total FROM tasks");
-$totalTasksRow = $totalTasksResult->fetch_assoc();
+// Count total and completed tasks for this user
+$totalTasksResult = $conn->prepare("SELECT COUNT(*) as total FROM tasks WHERE user_id = ?");
+$totalTasksResult->bind_param("i", $user_id);
+$totalTasksResult->execute();
+$totalTasksRes = $totalTasksResult->get_result();
+$totalTasksRow = $totalTasksRes->fetch_assoc();
 $totalTasks = (int)$totalTasksRow['total'];
+$totalTasksResult->close();
 
-$completedTasksResult = $conn->query("SELECT COUNT(*) as completed FROM tasks WHERE completed = 1");
-$completedTasksRow = $completedTasksResult->fetch_assoc();
+$completedTasksResult = $conn->prepare("SELECT COUNT(*) as completed FROM tasks WHERE user_id = ? AND completed = 1");
+$completedTasksResult->bind_param("i", $user_id);
+$completedTasksResult->execute();
+$completedTasksRes = $completedTasksResult->get_result();
+$completedTasksRow = $completedTasksRes->fetch_assoc();
 $completedTasks = (int)$completedTasksRow['completed'];
+$completedTasksResult->close();
 ?>
 
 <!DOCTYPE html>
@@ -69,7 +97,7 @@ $completedTasks = (int)$completedTasksRow['completed'];
 </head>
 <body>
 
-  <h1> 🍵 Welcome User, What's On Your Mind Today?</h1>
+  <h1> 🍵 Welcome User #<?= htmlspecialchars($user_id) ?>, What's On Your Mind Today?</h1>
 
   <div class="parent">
     <div id="time">
@@ -183,6 +211,10 @@ $completedTasks = (int)$completedTasksRow['completed'];
         document.body.appendChild(form);
         form.submit();
       }
+    }
+
+    function logout() {
+      window.location.href = 'sessionout.php';
     }
   </script>
 
