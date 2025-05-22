@@ -57,31 +57,7 @@ $completedTasks = (int)$completedTasksRow['completed'];
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>To Do List</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
 
-    #progress-bar-container {
-      width: 100%;
-      background-color: #c8c6b1; 
-      border-radius: 10px;
-      height: 25px;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    #progress-bar {
-      height: 100%;
-      background-color: #6e753f; 
-      width: 0%;
-      transition: width 0.4s ease;
-    }
-    
-    #progress-text {
-      text-align: center;
-      font-weight: bold;
-      color #6e753f;
-      margin-bottom: 10px;
-    }
-  </style>
 </head>
 <body>
 
