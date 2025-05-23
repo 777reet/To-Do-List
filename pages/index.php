@@ -1,12 +1,13 @@
 <?php
 session_start();
 
-// Simulated login for testing - replace with your real login logic!
+// Redirect to login if not logged in
 if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1; // Default test user ID; change as needed
+    header("Location: ../index.php");
+    exit();
 }
 
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];  // this should be string like email
 
 date_default_timezone_set("Asia/Kolkata");
 $day = date("l");      
@@ -23,7 +24,7 @@ if ($conn->connect_error) {
 // Clear all tasks for this user (Finish Day)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all_tasks'])) {
     $stmt = $conn->prepare("DELETE FROM tasks WHERE user_id = ?");
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param("s", $user_id);
     $stmt->execute();
     $stmt->close();
 
@@ -37,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $task = trim($_POST['task']);
         if (!empty($task)) {
             $stmt = $conn->prepare("INSERT INTO tasks (task, user_id) VALUES (?, ?)");
-            $stmt->bind_param("si", $task, $user_id);
+            $stmt->bind_param("ss", $task, $user_id);
             $stmt->execute();
             $stmt->close();
         }
@@ -46,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['done_task'])) {
         $id = intval($_POST['task_id']);
         $stmt = $conn->prepare("UPDATE tasks SET completed = 1 WHERE id = ? AND user_id = ?");
-        $stmt->bind_param("ii", $id, $user_id);
+        $stmt->bind_param("is", $id, $user_id);
         $stmt->execute();
         $stmt->close();
     }
@@ -54,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete_task'])) {
         $id = intval($_POST['task_id']);
         $stmt = $conn->prepare("DELETE FROM tasks WHERE id = ? AND user_id = ?");
-        $stmt->bind_param("ii", $id, $user_id);
+        $stmt->bind_param("is", $id, $user_id);
         $stmt->execute();
         $stmt->close();
     }
@@ -65,13 +66,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Fetch tasks belonging only to this user
 $stmt = $conn->prepare("SELECT * FROM tasks WHERE user_id = ? ORDER BY id DESC");
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("s", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 // Count total and completed tasks for this user
 $totalTasksResult = $conn->prepare("SELECT COUNT(*) as total FROM tasks WHERE user_id = ?");
-$totalTasksResult->bind_param("i", $user_id);
+$totalTasksResult->bind_param("s", $user_id);
 $totalTasksResult->execute();
 $totalTasksRes = $totalTasksResult->get_result();
 $totalTasksRow = $totalTasksRes->fetch_assoc();
@@ -79,7 +80,7 @@ $totalTasks = (int)$totalTasksRow['total'];
 $totalTasksResult->close();
 
 $completedTasksResult = $conn->prepare("SELECT COUNT(*) as completed FROM tasks WHERE user_id = ? AND completed = 1");
-$completedTasksResult->bind_param("i", $user_id);
+$completedTasksResult->bind_param("s", $user_id);
 $completedTasksResult->execute();
 $completedTasksRes = $completedTasksResult->get_result();
 $completedTasksRow = $completedTasksRes->fetch_assoc();

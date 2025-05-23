@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -40,6 +40,7 @@
     }
 
     .login-form input[type="text"],
+    .login-form input[type="email"],
     .login-form input[type="password"] {
       width: 100%;
       padding: 12px;
@@ -87,10 +88,10 @@
     <h1>Login Below</h1>
 
     <form action="login.php" method="POST">
-      <label for="id">ID</label>
-      <input type="text" id="id" name="id" required>
+      <label for="id">Email Id :</label>
+      <input type="email" id="id" name="id" required>
 
-      <label for="password">Password</label>
+      <label for="password">Password :</label>
       <input type="password" id="password" name="password" required>
 
       <button type="submit">Login</button>
