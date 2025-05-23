@@ -1,11 +1,15 @@
 <?php
 session_start();
 
-// Redirect to login if not logged in
-if (!isset($_SESSION['user_id'])) {
+// DEBUG: Make sure user_id is set uniquely per session
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
+    // Not logged in, redirect to login page
     header("Location: ../index.php");
     exit();
 }
+
+// Log the current user_id for debugging (check your PHP error log)
+error_log("Current session user_id: " . $_SESSION['user_id']);
 
 $user_id = $_SESSION['user_id'];  // this should be string like email
 
