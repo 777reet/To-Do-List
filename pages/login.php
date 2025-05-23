@@ -32,6 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($stmt->fetch()) {
         if (password_verify($password, $hashed_password)) {
+            session_regenerate_id(true);  
             $_SESSION['user_id'] = $id;
             $stmt->close();
             $conn->close();

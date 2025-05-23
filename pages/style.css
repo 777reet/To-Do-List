@@ -1,3 +1,5 @@
+
+/* CSS for the main page */
 body {
   background-color: #6e753f; 
   margin: 0;
@@ -129,7 +131,7 @@ th, td {
 
 button.done-btn {
   background-color: #b7d5b6; 
-  color: #fef5f0; /* cream */
+  color: #fef5f0; 
   border: none;
   padding: 6px 12px;
   border-radius: 4px;
@@ -141,8 +143,8 @@ button.done-btn:hover {
 }
 
 button.delete-btn {
-  background-color: #6e753f; /* olive green */
-  color: #fef5f0; /* cream */
+  background-color: #6e753f; 
+  color: #fef5f0; 
   border: none;
   padding: 6px 12px;
   border-radius: 4px;
@@ -192,3 +194,13 @@ button.delete-btn:hover {
       font-weight: bold;
       color : #6e753f;
       margin-bottom: 10px;}
+
+
+      /*css for themes*/
+      .strawberry {
+        background-color: #F28B82; 
+  margin: 0;
+  padding: 0;
+  font-family: 'Trebuchet MS', sans-serif;
+  color: #fef5f0;
+      }

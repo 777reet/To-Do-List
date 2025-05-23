@@ -1,17 +1,13 @@
 <?php
 session_start();
 
-// DEBUG: Make sure user_id is set uniquely per session
-if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
-    // Not logged in, redirect to login page
-    header("Location: ../index.php");
-    exit();
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    die("No user session found. Please login.");
 }
 
-// Log the current user_id for debugging (check your PHP error log)
-error_log("Current session user_id: " . $_SESSION['user_id']);
-
-$user_id = $_SESSION['user_id'];  // this should be string like email
+$user_id = $_SESSION['user_id'];
+error_log("Current session user_id: " . $user_id);
 
 date_default_timezone_set("Asia/Kolkata");
 $day = date("l");      
@@ -25,8 +21,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Debug log before queries
+error_log("Fetching tasks for user_id: " . $user_id);
+
 // Clear all tasks for this user (Finish Day)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all_tasks'])) {
+    error_log("Clearing all tasks for user_id: " . $user_id);
     $stmt = $conn->prepare("DELETE FROM tasks WHERE user_id = ?");
     $stmt->bind_param("s", $user_id);
     $stmt->execute();
@@ -36,11 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all_tasks'])) {
     exit();
 }
 
-// Handle task actions: add, done, delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_task'])) {
         $task = trim($_POST['task']);
         if (!empty($task)) {
+            error_log("Adding task for user_id: $user_id Task: $task");
             $stmt = $conn->prepare("INSERT INTO tasks (task, user_id) VALUES (?, ?)");
             $stmt->bind_param("ss", $task, $user_id);
             $stmt->execute();
@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['done_task'])) {
         $id = intval($_POST['task_id']);
+        error_log("Marking task done for user_id: $user_id Task ID: $id");
         $stmt = $conn->prepare("UPDATE tasks SET completed = 1 WHERE id = ? AND user_id = ?");
         $stmt->bind_param("is", $id, $user_id);
         $stmt->execute();
@@ -58,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['delete_task'])) {
         $id = intval($_POST['task_id']);
+        error_log("Deleting task for user_id: $user_id Task ID: $id");
         $stmt = $conn->prepare("DELETE FROM tasks WHERE id = ? AND user_id = ?");
         $stmt->bind_param("is", $id, $user_id);
         $stmt->execute();
@@ -102,7 +104,7 @@ $completedTasksResult->close();
 </head>
 <body>
 
-  <h1> 🍵 Welcome User #<?= htmlspecialchars($user_id) ?>, What's On Your Mind Today?</h1>
+  <h1> 🍵🍓 Welcome User #<?= htmlspecialchars($user_id) ?>, What's On Your Mind Today?</h1><br><br>
 
   <div class="parent">
     <div id="time">
@@ -121,7 +123,7 @@ $completedTasksResult->close();
 
       <div id="entry">
         <form action="" method="POST">
-          <label for="task">🍵 Enter Your Task: </label>
+          <label for="task">🍵🍓 Enter Your Task: </label>
           <input type="text" name="task" id="task" required />
           <button type="submit" name="add_task" class="btn">+</button>
         </form>
