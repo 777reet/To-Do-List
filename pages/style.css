@@ -37,6 +37,7 @@ h1 {
   box-shadow: 0 6px 20px rgba(182, 197, 255, 0.4);
 }
 
+/* Time section */
 /* Time box */
 #time {
   flex: 0 0 25%;
@@ -64,6 +65,7 @@ h1 {
   margin: 10px 0;
   box-shadow: 0 0 12px 3px rgba(139, 233, 253, 0.7);
 }
+/* time section ends*/
 
 /* Progress and entry form container */
 #progress {
