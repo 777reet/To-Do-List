@@ -123,7 +123,7 @@ $completedTasksResult->close();
 
       <div id="entry">
         <form action="" method="POST">
-          <label for="task">🫧 Enter Your Task: </label>
+          <label for="task">🫧 Enter Your Task Here: </label>
           <input type="text" name="task" id="task" required />
           <button type="submit" name="add_task" class="btn">+</button>
         </form>
