@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Check if user is logged in
+// Checks if the user is logged in 
 if (!isset($_SESSION['user_id'])) {
     die("No user session found. Please login.");
 }
