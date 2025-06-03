@@ -4,4 +4,5 @@ session_destroy();
 header("Location: login.html");
 exit();
 
+// session out page 
 
