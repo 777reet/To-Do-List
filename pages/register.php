@@ -25,9 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Check if user already exists
+    // Checks if user already exists
     $stmt = $conn->prepare("SELECT id FROM users WHERE id = ?");
     $stmt->bind_param("s", $id);
+    
     $stmt->execute();
     $stmt->store_result();
 
