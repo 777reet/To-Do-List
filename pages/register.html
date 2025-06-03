@@ -4,32 +4,114 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register</title>
-
   <style>
+    /* Aurora Gradient Background */
     body {
-      background-color: #6e753f;
       margin: 0;
       padding: 0;
       font-family: 'Trebuchet MS', sans-serif;
       color: #fef5f0;
+      overflow: hidden;
+      position: relative;
+      min-height: 100vh;
+      background-color: #000d1a;
     }
 
+    body::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 25% 25%, #00f0ff, #00bfff, #1e90ff, #7b2fff, #b300ff, #ff00f7);
+      background-size: 400% 400%;
+      animation: aurora 20s ease-in-out infinite;
+      z-index: -2;
+      opacity: 0.5;
+      filter: blur(90px);
+    }
+
+    @keyframes aurora {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Bubble container */
+    .bubbles {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+      z-index: -1;
+    }
+
+    /* Bubble style */
+    .bubble {
+      position: absolute;
+      bottom: -100px; /* start below the viewport */
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(0, 255, 255, 0.6), transparent 70%);
+      filter: drop-shadow(0 0 10px #00f0ff);
+      animation-name: rise;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      opacity: 0.7;
+    }
+
+    /* Bubble rise animation */
+    @keyframes rise {
+      0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: translateY(-40vh) translateX(10px) scale(1.1);
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(-10px) scale(0.8);
+        opacity: 0;
+      }
+    }
+
+    /* Register Form Styling */
     .register-form {
-      background-color: #fef5f0;
-      color: #6e753f;
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      color: #ffffff;
       max-width: 500px;
       margin: 100px auto;
       padding: 40px;
-      border: 4px solid #c8c6b1;
+      border: 2px solid rgba(255, 255, 255, 0.2);
       border-radius: 20px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
       text-align: center;
+      animation: slideFadeIn 1s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes slideFadeIn {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
     .register-form h1 {
       margin-bottom: 30px;
-      font-size: 28px;
-      color: #6e753f;
+      font-size: 32px;
+      color: #00f0ff;
+      text-shadow: 0 0 10px #00f0ff;
+      animation: fadeIn 1.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .register-form label {
@@ -44,48 +126,111 @@
       width: 100%;
       padding: 12px;
       margin-bottom: 20px;
-      border: 2px solid #c8c6b1;
-      border-radius: 8px;
-      box-sizing: border-box;
+      border: 2px solid #00f0ff;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
       font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px transparent;
+    }
+
+    .register-form input[type="text"]:hover,
+    .register-form input[type="password"]:hover,
+    .register-form input[type="text"]:focus,
+    .register-form input[type="password"]:focus {
+      border-color: #00f0ff;
+      box-shadow: 0 0 15px #00f0ff, 0 0 30px #1e90ff;
+      outline: none;
+      transform: scale(1.02);
     }
 
     .register-form button {
-      background-color: rgb(14, 56, 2);
-      color: #fef5f0;
-      padding: 10px 20px;
+      background: linear-gradient(135deg, #00f0ff, #1e90ff, #b300ff);
+      color: #ffffff;
+      padding: 14px 24px;
       font-size: 16px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       width: 100%;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 12px #00f0ff;
     }
 
     .register-form button:hover {
-      background-color: #2d6e25;
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00f0ff, 0 0 40px #1e90ff, 0 0 60px #b300ff;
+    }
+
+    .register-form button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: skewX(-45deg);
+      transition: 0.5s;
+    }
+
+    .register-form button:hover::before {
+      left: 100%;
+    }
+
+    .register-form a {
+      color: #00f0ff;
+      text-decoration: none;
+      font-weight: bold;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    .register-form a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #00f0ff, #b300ff);
+      transition: width 0.3s ease;
+    }
+
+    .register-form a:hover {
+      color: #ffffff;
+    }
+
+    .register-form a:hover::after {
+      width: 100%;
     }
 
     .register-form h4 {
       margin-top: 20px;
-      color: #6e753f;
-    }
-
-    .register-form a {
-      color: rgb(14, 56, 2);
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .register-form a:hover {
-      text-decoration: underline;
+      color: #00f0ff;
+      text-shadow: 0 0 10px #00f0ff;
     }
   </style>
 </head>
 
 <body>
+  <div class="bubbles">
+    <div class="bubble" style="width: 40px; height: 40px; left: 10%; animation-duration: 12s; animation-delay: 0s;"></div>
+    <div class="bubble" style="width: 30px; height: 30px; left: 25%; animation-duration: 10s; animation-delay: 3s;"></div>
+    <div class="bubble" style="width: 50px; height: 50px; left: 40%; animation-duration: 15s; animation-delay: 5s;"></div>
+    <div class="bubble" style="width: 25px; height: 25px; left: 55%; animation-duration: 12s; animation-delay: 1s;"></div>
+    <div class="bubble" style="width: 35px; height: 35px; left: 70%; animation-duration: 14s; animation-delay: 2s;"></div>
+    <div class="bubble" style="width: 20px; height: 20px; left: 82%; animation-duration: 11s; animation-delay: 4s;"></div>
+    <div class="bubble" style="width: 45px; height: 45px; left: 90%; animation-duration: 13s; animation-delay: 0s;"></div>
+    <div class="bubble" style="width: 28px; height: 28px; left: 15%; animation-duration: 9s; animation-delay: 6s;"></div>
+  </div>
+
   <div class="register-form">
     <h1>Register Below</h1>
-
     <form action="register.php" method="POST">
       <label for="id">Email Id :</label>
       <input type="text" id="id" name="id" required>
@@ -95,7 +240,6 @@
 
       <button type="submit">Create Account</button>
     </form>
-
     <h4>
       Have an account?
       <a href="login.html">Click here to login</a>

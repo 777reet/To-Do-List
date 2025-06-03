@@ -28,7 +28,7 @@ error_log("Fetching tasks for user_id: " . $user_id);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all_tasks'])) {
     error_log("Clearing all tasks for user_id: " . $user_id);
     $stmt = $conn->prepare("DELETE FROM tasks WHERE user_id = ?");
-    $stmt->bind_param("s", $user_id);
+    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $stmt->close();
 
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($task)) {
             error_log("Adding task for user_id: $user_id Task: $task");
             $stmt = $conn->prepare("INSERT INTO tasks (task, user_id) VALUES (?, ?)");
-            $stmt->bind_param("ss", $task, $user_id);
+            $stmt->bind_param("si", $task, $user_id);
             $stmt->execute();
             $stmt->close();
         }
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = intval($_POST['task_id']);
         error_log("Marking task done for user_id: $user_id Task ID: $id");
         $stmt = $conn->prepare("UPDATE tasks SET completed = 1 WHERE id = ? AND user_id = ?");
-        $stmt->bind_param("is", $id, $user_id);
+        $stmt->bind_param("ii", $id, $user_id);
         $stmt->execute();
         $stmt->close();
     }
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = intval($_POST['task_id']);
         error_log("Deleting task for user_id: $user_id Task ID: $id");
         $stmt = $conn->prepare("DELETE FROM tasks WHERE id = ? AND user_id = ?");
-        $stmt->bind_param("is", $id, $user_id);
+        $stmt->bind_param("ii", $id, $user_id);
         $stmt->execute();
         $stmt->close();
     }
@@ -72,13 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Fetch tasks belonging only to this user
 $stmt = $conn->prepare("SELECT * FROM tasks WHERE user_id = ? ORDER BY id DESC");
-$stmt->bind_param("s", $user_id);
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 // Count total and completed tasks for this user
 $totalTasksResult = $conn->prepare("SELECT COUNT(*) as total FROM tasks WHERE user_id = ?");
-$totalTasksResult->bind_param("s", $user_id);
+$totalTasksResult->bind_param("i", $user_id);
 $totalTasksResult->execute();
 $totalTasksRes = $totalTasksResult->get_result();
 $totalTasksRow = $totalTasksRes->fetch_assoc();
@@ -86,7 +86,7 @@ $totalTasks = (int)$totalTasksRow['total'];
 $totalTasksResult->close();
 
 $completedTasksResult = $conn->prepare("SELECT COUNT(*) as completed FROM tasks WHERE user_id = ? AND completed = 1");
-$completedTasksResult->bind_param("s", $user_id);
+$completedTasksResult->bind_param("i", $user_id);
 $completedTasksResult->execute();
 $completedTasksRes = $completedTasksResult->get_result();
 $completedTasksRow = $completedTasksRes->fetch_assoc();
@@ -104,7 +104,7 @@ $completedTasksResult->close();
 </head>
 <body>
 
-  <h1> 🍵🍓 Welcome User #<?= htmlspecialchars($user_id) ?>, What's On Your Mind Today?</h1><br><br>
+  <h1> 🫧 Welcome, What's On Your Mind Today?</h1><br><br>
 
   <div class="parent">
     <div id="time">
@@ -123,7 +123,7 @@ $completedTasksResult->close();
 
       <div id="entry">
         <form action="" method="POST">
-          <label for="task">🍵🍓 Enter Your Task: </label>
+          <label for="task">🫧 Enter Your Task: </label>
           <input type="text" name="task" id="task" required />
           <button type="submit" name="add_task" class="btn">+</button>
         </form>
@@ -185,23 +185,25 @@ $completedTasksResult->close();
   </div>
 
   <script>
-    const totalTasks = <?= $totalTasks ?>;
-    const completedTasks = <?= $completedTasks ?>;
+    document.addEventListener('DOMContentLoaded', () => {
+      const totalTasks = <?= (int)$totalTasks ?>;
+      const completedTasks = <?= (int)$completedTasks ?>;
 
-    function getProgressPercent(total, completed) {
-      if (total === 0) return 0;
-      return Math.round((completed / total) * 100);
-    }
+      function getProgressPercent(total, completed) {
+        if (total === 0) return 0;
+        return Math.round((completed / total) * 100);
+      }
 
-    function updateProgressBar(total, completed) {
-      const progressBar = document.getElementById('progress-bar');
-      const progressText = document.getElementById('progress-text');
-      const percent = getProgressPercent(total, completed);
-      progressBar.style.width = percent + '%';
-      progressText.textContent = `${percent}% Completed (${completed} of ${total} tasks)`;
-    }
+      function updateProgressBar(total, completed) {
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const percent = getProgressPercent(total, completed);
+        progressBar.style.width = percent + '%';
+        progressText.textContent = `${percent}% Completed (${completed} of ${total} tasks)`;
+      }
 
-    updateProgressBar(totalTasks, completedTasks);
+      updateProgressBar(totalTasks, completedTasks);
+    });
 
     function finishDay() {
       if(confirm('Are you sure you want to clear all tasks for today?')) {
